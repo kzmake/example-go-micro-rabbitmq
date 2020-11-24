@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "github.com/kzmake/example-go-micro-rabbitmq/proto";
+
+message HogeEvent {
+	string id = 1;
+	int64 timestamp_ns = 2;
+	string action = 3;
+	map<string, string> data = 4;
+}
+
+message FugaEvent {
+	string id = 1;
+	int64 timestamp_ns = 2;
+	string action = 3;
+	string data = 4;
+}
