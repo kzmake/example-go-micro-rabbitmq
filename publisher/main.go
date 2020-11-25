@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
+	"log"
 	"math/rand"
 	"time"
 
 	"github.com/bxcodec/faker/v3"
-	"github.com/kzmake/micro-kit/pkg/logger/technical"
 	plogger "github.com/kzmake/micro-kit/pkg/wrapper/logger"
 	micro "github.com/micro/go-micro/v2"
 	"github.com/micro/go-micro/v2/broker"
@@ -17,7 +17,11 @@ import (
 	"github.com/kzmake/example-go-micro-rabbitmq/proto"
 )
 
-const topic = "test.hoge"
+const (
+	exchange = "test.hoge.exchange"
+	topic    = "test.hoge.create"
+	queue    = "test.hoge.queue"
+)
 
 var actions = []string{
 	"CreateHoge",
@@ -56,16 +60,16 @@ func publish(p micro.Publisher, e *proto.HogeEvent, opts ...client.PublishOption
 	// publish an event
 	ctx := metadata.NewContext(context.Background(), md)
 	if err := p.Publish(ctx, e, opts...); err != nil {
-		technical.Infof("event の Publish に失敗しました: %+v", err)
+		log.Printf("event の Publish に失敗しました: %+v\n", err)
 	} else {
-		technical.Infof("%s: %+v with metadata %+v", e.GetId(), e, md)
+		log.Printf("%s: %+v with metadata %+v\n", e.GetId(), e, md)
 	}
 }
 
 func main() {
 	service := micro.NewService(
 		micro.Broker(rabbitmq.NewBroker(
-			rabbitmq.ExchangeName("test.hoge"),
+			rabbitmq.ExchangeName(exchange),
 			rabbitmq.PrefetchCount(1),
 		)),
 		micro.WrapSubscriber(plogger.NewSubscriberWrapper()),
